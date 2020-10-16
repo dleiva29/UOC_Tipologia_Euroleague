@@ -1,3 +1,3 @@
 import whois
 
-print(whois.whois('https://www.euroleague.com'))
+print(whois.whois('https://www.euroleague.net'))
