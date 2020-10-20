@@ -21,7 +21,7 @@ url_web_jugadors_base="https://www.euroleague.net/competition/players?letter="
 # Interació per l'abecedari
 url_web_jugadors=url_web_jugadors_base+"A"
 
-#page = requests.get(url_web_jugadors)
+page = requests.get(url_web_jugadors)
 soup = BeautifulSoup(page.content,features="lxml")
 items=soup.find_all('div', class_='item')
 
