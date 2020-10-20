@@ -72,5 +72,42 @@ a_series = pd.Series(averages, index = jugadors_averages.columns)
 jugadors_averages=jugadors_averages.append(a_series,ignore_index=True)
 
 
+<<<<<<< HEAD
 #print(jugadors_averages)
+=======
+print(jugadors_averages)
+
+##Alvaro
+#Exemple estadístiques per a 
+# https://www.euroleague.net/competition/players/showplayer?pcode=003733&seasoncode=E2020#!careerstats
+#Extracció de la capçalera de les estadistiques
+atributs =[]
+cap  = soup_jugador.find('tr', class_= 'PlayerGridHeader').find_all('th') #només volem 1 taula (hi ha 3 repetides)
+for ind in cap:
+    atributs.append(ind.get_text())
+
+print(atributs)
+
+
+#Extracció average stats 1a caixa - Eurolliga
+nom = 'Abalde' #faltaria fer l'scrapping del nom del jugador
+avg_stat = []
+stats_jugador=soup_jugador.find('tr', class_ ='PlayerGridRow AverageFooter').find_all('td')
+for val in stats_jugador:
+    avg_stat.append(val.get_text())
+    
+print(avg_stat)
+avg_stat = np.ravel(avg_stat)  #no estic segur si es fa així. Vull convertir uana llista en un vector
+
+# guardar-ho en un dataframe
+stats_totals=pd.DataFrame(data= avg_stat, index = atributs)
+stats_totals.columns=  [nom]
+print(stats_totals.transpose())
+
+#hi ha ua millor manera de fer els dataframes, estic molt rovellat.
+
+# to do: 
+# - iterar per a cada jugador de la taula links_jugadors
+# - scrapping nom jugador (potser no cal)
+>>>>>>> 633e3d365248eea6f0571c7cd6a20f0f1bc93b39
 
