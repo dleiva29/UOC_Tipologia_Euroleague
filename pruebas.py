@@ -36,7 +36,10 @@ url_web_jugadors_base="https://www.euroleague.net/competition/players?letter="
 url_web_jugadors=url_web_jugadors_base+"A"
 
 page = requests.get(url_web_jugadors)
+<<<<<<< HEAD
 time.sleep(15)
+=======
+>>>>>>> 58ea16ef60e6adbcd6837039099fb0ca4d8bdefa
 soup = BeautifulSoup(page.content,features="lxml")
 items=soup.find_all('div', class_='item')
 
