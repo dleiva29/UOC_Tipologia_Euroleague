@@ -24,6 +24,8 @@ url_base="https://www.euroleague.net"
 url_web_jugadors_base="https://www.euroleague.net/competition/players?letter="
 
 
+# PRIMER: Extracció de tots els noms i links de jugadors
+
 # Interació per l'abecedari
 for letra in abecedari:
     url_web_jugadors=url_web_jugadors_base+letra
@@ -41,7 +43,9 @@ for letra in abecedari:
         nom=name_complet.split(", ")[1]
         jugadors=jugadors.append({"name_Complet":name_complet, "cognom":cognom, "nom":nom },ignore_index=True)
 
-        
+
+# SEGON: Extracció de averages de cada jugador
+
 for i in range(len(links_jugadors)):
     # Web de cada jugador  
     url_jugador_career="https://www.euroleague.net"+links_jugadors.link[i][0]+"#!careerstats"
@@ -67,7 +71,7 @@ for i in range(len(links_jugadors)):
     # Extracció averages
     items=soup_jugador.find('tr', class_='PlayerGridRow AverageFooter')
         
-    if not items:
+    if not items: # Hi ha jugadors sense averages. S'afegeix valors buits
         a_series = pd.Series(dtype=pd.StringDtype(), index = jugadors_averages.columns)
     else:
         averages=items.get_text().split()[1:]
@@ -75,6 +79,7 @@ for i in range(len(links_jugadors)):
     
     jugadors_averages=jugadors_averages.append(a_series,ignore_index=True)
 
+# TERCER: Unir datasets jugadors amb dataset jugadors_averages
 jugadors=pd.concat([jugadors,jugadors_averages],axis=1)
 jugadors
 
