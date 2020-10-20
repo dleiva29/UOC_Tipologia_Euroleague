@@ -15,19 +15,8 @@ from bs4 import BeautifulSoup
 abecedari=string.ascii_uppercase #Iterar per tot l'abecedari
 links_jugadors=pd.DataFrame()
 jugadors=pd.DataFrame()
-jugadors_averages=pd.DataFrame(columns=("G",
-                                        "Pts",
-                                        "Avg",
-                                        "2FG",
-                                        "2FG_%",
-                                        "3FG",
-                                        "3FG_%",
-                                        "FT",
-                                        "FT_%",
-                                        "Reb",
-                                        "St",
-                                        "As",
-                                        "Bl")) # Es podria extreure automàticament els noms
+atributs =[]
+
 url_base="https://www.euroleague.net"
 url_web_jugadors_base="https://www.euroleague.net/competition/players?letter="
 
@@ -61,6 +50,20 @@ page = requests.get(url_jugador_career)
 soup_jugador = BeautifulSoup(page.content,features="lxml")
 
 
+# Extracció atributs (només al primer jugador)
+if not atributs: # si atributs buit
+    cap  = soup_jugador.find('tr', class_= 'PlayerGridHeader').find_all('th') #només volem 1 taula (hi ha 3 repetides)
+    at_prev=""
+
+    for ind in cap:
+        at= ind.get_text()
+        if at=="%":
+            at=at_prev+"_%" #Corregir % sólos
+        atributs.append(at)
+        at_prev=at
+    jugadors_averages=pd.DataFrame(columns=atributs[2:]) 
+
+
 # Extracció averages
 items=soup_jugador.find('tr', class_='PlayerGridRow AverageFooter')
 averages=items.get_text().split()[1:]
@@ -69,4 +72,5 @@ a_series = pd.Series(averages, index = jugadors_averages.columns)
 jugadors_averages=jugadors_averages.append(a_series,ignore_index=True)
 
 
-print(jugadors_averages)
+#print(jugadors_averages)
+
