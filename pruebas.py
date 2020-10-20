@@ -72,6 +72,12 @@ a_series = pd.Series(averages, index = jugadors_averages.columns)
 jugadors_averages=jugadors_averages.append(a_series,ignore_index=True)
 
 
+
+# Unir dataframe jugadors amb dataframe jugadors_averges
+# desprès de l'extracció dels averages de tots els jugadors
+
+#jugadors_averages=pd.concat([jugadors,jugadors_averages], axis=1)  
+
 <<<<<<< HEAD
 #print(jugadors_averages)
 =======
