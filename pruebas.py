@@ -111,3 +111,6 @@ for i in range(len(links_jugadors)):
 # Unió datasets    
 jugadors_descAverages=pd.concat([jugadors_desc,jugadors_averages],axis=1) # Unir datasets descripció i averages
 jugadors= pd.concat([jugadors,jugadors_descAverages],axis=1) #Unir datasets noms jugadors amb les seves dades
+
+
+jugadors.to_csv("jugadors.csv",index=False)
