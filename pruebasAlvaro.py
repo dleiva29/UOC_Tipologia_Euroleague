@@ -13,8 +13,11 @@ import string
 from bs4 import BeautifulSoup
 
 abecedari=string.ascii_uppercase #Iterar per tot l'abecedari
+
+
 links_jugadors=pd.DataFrame()
 jugadors=pd.DataFrame()
+jugadors_averages=pd.DataFrame()
 atributs =[]
 
 url_base="https://www.euroleague.net"
@@ -22,92 +25,107 @@ url_web_jugadors_base="https://www.euroleague.net/competition/players?letter="
 
 
 # Interació per l'abecedari
-url_web_jugadors=url_web_jugadors_base+"A"
-
-page = requests.get(url_web_jugadors)
-
-time.sleep(15)
-
-soup = BeautifulSoup(page.content,features="lxml")
-items=soup.find_all('div', class_='item')
-
-
-
-
-for link in items:
-    l=[link.a.get('href')]
-    name_complet=[link.a.get_text().strip()][0]
-    links_jugadors=links_jugadors.append({"link":l},ignore_index=True)
-    cognom=name_complet.split(", ")[0]
-    nom=name_complet.split(", ")[1]
-    jugadors=jugadors.append({"name_Complet":name_complet, "cognom":cognom, "nom":nom },ignore_index=True)
+abecedari = 'B'
+letra = 'B'
+for letra in abecedari:
+    url_web_jugadors=url_web_jugadors_base+letra
+    page = requests.get(url_web_jugadors)
+    time.sleep(15)
+    soup = BeautifulSoup(page.content,features="lxml")
     
+    items=soup.find_all('div', class_='item')
 
-# Web de cada jugador  
-url_jugador_career="https://www.euroleague.net"+links_jugadors.link[0][0]+"#!careerstats"
+    for link in items:
+        l=[link.a.get('href')]
+        name_complet=[link.a.get_text().strip()][0]
+        links_jugadors=links_jugadors.append({"link":l},ignore_index=True)
+        cognom=name_complet.split(", ")[0]
+        nom=name_complet.split(", ")[1]
+        jugadors=jugadors.append({"name_Complet":name_complet, "cognom":cognom, "nom":nom },ignore_index=True)
 
-page = requests.get(url_jugador_career)
-soup_jugador = BeautifulSoup(page.content,features="lxml")
+i = 0 # primer jugador
+#for i in range(len(links_jugadors)):
+for i in [0,1,2,3,4]:
+    # Web de cada jugador  
+    url_jugador_career="https://www.euroleague.net"+links_jugadors.link[i][0]+"#!careerstats"
+    page = requests.get(url_jugador_career)
+    time.sleep(15)
+    soup_jugador = BeautifulSoup(page.content,features="lxml")
 
-
-# Extracció atributs (només al primer jugador)
-if not atributs: # si atributs buit
-    cap  = soup_jugador.find('tr', class_= 'PlayerGridHeader').find_all('th') #només volem 1 taula (hi ha 3 repetides)
-    at_prev=""
-
-    for ind in cap:
-        at= ind.get_text()
-        if at=="%":
-            at=at_prev+"_%" #Corregir % sólos
-        atributs.append(at)
-        at_prev=at
-    jugadors_averages=pd.DataFrame(columns=atributs[2:]) 
-
-
-# Extracció averages
-items=soup_jugador.find('tr', class_='PlayerGridRow AverageFooter')
-averages=items.get_text().split()[1:]
-
-a_series = pd.Series(averages, index = jugadors_averages.columns)
-jugadors_averages=jugadors_averages.append(a_series,ignore_index=True)
-
-
-<<<<<<< HEAD
-#print(jugadors_averages)
-=======
-print(jugadors_averages)
-
-##Alvaro
-#Exemple estadístiques per a 
-# https://www.euroleague.net/competition/players/showplayer?pcode=003733&seasoncode=E2020#!careerstats
-#Extracció de la capçalera de les estadistiques
-atributs =[]
-cap  = soup_jugador.find('tr', class_= 'PlayerGridHeader').find_all('th') #només volem 1 taula (hi ha 3 repetides)
-for ind in cap:
-    atributs.append(ind.get_text())
-
-print(atributs)
-
-
-#Extracció average stats 1a caixa - Eurolliga
-nom = 'Abalde' #faltaria fer l'scrapping del nom del jugador
-avg_stat = []
-stats_jugador=soup_jugador.find('tr', class_ ='PlayerGridRow AverageFooter').find_all('td')
-for val in stats_jugador:
-    avg_stat.append(val.get_text())
+    #mirar si hi ha dades d'eurolliga
+    eurolliga = soup_jugador.find('span', id= 'ctl00_ctl00_ctl00_maincontainer_maincontent_contentpane_ctl01_ctl03_ctl00_lblCompetitionName').get_text()
+    eurolliga = eurolliga == 'Eurolague'
     
-print(avg_stat)
-avg_stat = np.ravel(avg_stat)  #no estic segur si es fa així. Vull convertir uana llista en un vector
+    # Extracció atributs (només al primer jugador)
+    if not atributs: # si atributs buit
+        
+        # Atributs averages
+        cap  = soup_jugador.find('tr', class_= 'PlayerGridHeader').find_all('th') #només volem 1 taula (hi ha 3 repetides)
+        at_prev=""
 
-# guardar-ho en un dataframe
-stats_totals=pd.DataFrame(data= avg_stat, index = atributs)
-stats_totals.columns=  [nom]
-print(stats_totals.transpose())
+        for ind in cap:
+            at= ind.get_text()
+            if at=="%":
+                at=at_prev+"_%" #Corregir % sólos
+            atributs.append(at)
+            at_prev=at
+        jugadors_averages=pd.DataFrame(columns=atributs[2:]) 
+        
+        # Atributs descripció
+        atributs_jugador = [value 
+           for element in soup_jugador.find('div',class_="summary-first").find_all('span',class_=True)
+           for value in element["class"]]
 
-#hi ha ua millor manera de fer els dataframes, estic molt rovellat.
+        atributs_jugador.append("position")
 
-# to do: 
-# - iterar per a cada jugador de la taula links_jugadors
-# - scrapping nom jugador (potser no cal)
->>>>>>> 633e3d365248eea6f0571c7cd6a20f0f1bc93b39
+        for element in soup_jugador.find('div',class_="summary-second").find_all('span'):
+            at=element.get_text().split(": ")[0]
+            atributs_jugador.append(at)
 
+        jugadors_desc=pd.DataFrame(columns=atributs_jugador)
+
+
+    
+    #Extracció temporada a temporada
+    #temp_jug = []
+    #stat_temp = soup_jugador.find('div', class_ ='PlayerPhaseStatisticsContainer table-responsive-container')
+    #for element in stat_temp.find_all('tr', class_="PlayerGridRow",limit= 2):
+    #    a = element.get_text().split()
+    #    temp_jug.append(a)
+
+    # Extracció averages
+    items2 = []
+    if eurolliga: #si no es d'eurolliga no ho extreiem
+        items2=soup_jugador.find('tr', class_='PlayerGridRow AverageFooter')
+        
+    if not items2:
+        a_series = pd.Series(dtype=pd.StringDtype(), index = jugadors_averages.columns)
+    else:
+        averages=items2.get_text().split()[1:]
+        a_series = pd.Series(averages, index = jugadors_averages.columns)
+    
+    jugadors_averages=jugadors_averages.append(a_series,ignore_index=True)
+    
+    
+    soup_desc=soup_jugador.find('div',class_="summary").find_all(text=True)
+    
+     # Extracció descripcions
+    indices = [2, 5, 7]
+    selected_elements = [soup_desc[index] for index in indices]
+
+
+    for element in soup_jugador.find('div',class_="summary-second").find_all('span'):
+        at=element.get_text().split(": ")[1]
+        selected_elements.append(at)
+
+    a_series = pd.Series(selected_elements, index = jugadors_desc.columns)
+    jugadors_desc=jugadors_desc.append(a_series,ignore_index=True)
+
+
+
+# Unió datasets    
+jugadors_descAverages=pd.concat([jugadors_desc,jugadors_averages],axis=1) # Unir datasets descripció i averages
+jugadors= pd.concat([jugadors,jugadors_descAverages],axis=1) #Unir datasets noms jugadors amb les seves dades
+
+
+#jugadors.to_csv("jugadors.csv",index=False)
