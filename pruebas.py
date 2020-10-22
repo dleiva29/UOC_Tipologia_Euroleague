@@ -81,13 +81,16 @@ for i in range(len(links_jugadors)):
 
 
     # Extracció averages
+    eurolliga = soup_jugador.find('span', 
+                              id= 'ctl00_ctl00_ctl00_maincontainer_maincontent_contentpane_ctl01_ctl03_ctl00_lblCompetitionName',
+                             text="Euroleague")
     items=soup_jugador.find('tr', class_='PlayerGridRow AverageFooter')
         
-    if not items:
-        a_series = pd.Series(dtype=pd.StringDtype(), index = jugadors_averages.columns)
-    else:
+    if eurolliga and items:
         averages=items.get_text().split()[1:]
         a_series = pd.Series(averages, index = jugadors_averages.columns)
+    else:
+        a_series = pd.Series(dtype=pd.StringDtype(), index = jugadors_averages.columns)
     
     jugadors_averages=jugadors_averages.append(a_series,ignore_index=True)
     
