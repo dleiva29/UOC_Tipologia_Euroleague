@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 
 abecedari=string.ascii_uppercase #Iterar per tot l'abecedari
 
+start_time = time.time()
 
 links_jugadors=pd.DataFrame()
 jugadors=pd.DataFrame()
@@ -25,8 +26,6 @@ url_web_jugadors_base="https://www.euroleague.net/competition/players?letter="
 
 
 # Interació per l'abecedari
-abecedari = 'A'
-letra = 'A'
 for letra in abecedari:
     url_web_jugadors=url_web_jugadors_base+letra
     page = requests.get(url_web_jugadors)
@@ -46,6 +45,7 @@ for letra in abecedari:
 i = 0 # primer jugador
 for i in range(len(links_jugadors)):
     # Web de cada jugador  
+    print(i)
     url_jugador_career="https://www.euroleague.net"+links_jugadors.link[i][0]+"#!careerstats"
     page = requests.get(url_jugador_career)
     time.sleep(15)
@@ -84,7 +84,11 @@ for i in range(len(links_jugadors)):
 
 
     # Extracció averages
-    eurolliga = soup_jugador.find('span',id= 'ctl00_ctl00_ctl00_maincontainer_maincontent_contentpane_ctl01_ctl03_ctl00_lblCompetitionName').get_text() == "Euroleague"
+    try: 
+        eurolliga = soup_jugador.find('span',id= 'ctl00_ctl00_ctl00_maincontainer_maincontent_contentpane_ctl01_ctl03_ctl00_lblCompetitionName').get_text() == "Euroleague"
+    except: 
+        eurolliga = False
+        
     items=soup_jugador.find('tr', class_='PlayerGridRow AverageFooter')
         
     if eurolliga and items:
@@ -134,3 +138,6 @@ jugadors= pd.concat([jugadors,jugadors_descAverages],axis=1) #Unir datasets noms
 
 jugadors_temporada.to_csv("jugadors_temporada.csv",index=False)
 #jugadors.to_csv("jugadors.csv",index=False)
+
+end_time = time.time()
+print (str(round(((end_time - start_time) / 60) , 2)))
