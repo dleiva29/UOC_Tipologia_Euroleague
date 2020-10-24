@@ -14,7 +14,6 @@ from bs4 import BeautifulSoup
 
 abecedari=string.ascii_uppercase #Iterar per tot l'abecedari
 
-start_time = time.time()
 
 links_jugadors=pd.DataFrame()
 jugadors=pd.DataFrame()
@@ -41,18 +40,16 @@ for letra in abecedari:
         cognom=name_complet.split(", ")[0]
         nom=name_complet.split(", ")[1]
         jugadors=jugadors.append({"name_Complet":name_complet, "cognom":cognom, "nom":nom },ignore_index=True)
-        jugadors=jugadors[["name_Complet","cognom","nom"]] # Corregido el orden de las columnas
 
-i = 0 # primer jugador
 for i in range(len(links_jugadors)):
+
     # Web de cada jugador  
-    print(i)
     url_jugador_career="https://www.euroleague.net"+links_jugadors.link[i][0]+"#!careerstats"
     page = requests.get(url_jugador_career)
     time.sleep(15)
     soup_jugador = BeautifulSoup(page.content,features="lxml")
 
-    
+
     # Extracció atributs (només al primer jugador)
     if not atributs: # si atributs buit
         
@@ -67,8 +64,6 @@ for i in range(len(links_jugadors)):
             atributs.append(at)
             at_prev=at
         jugadors_averages=pd.DataFrame(columns=atributs[2:]) 
-        jugadors_temporada = pd.DataFrame(columns=atributs)
-        colnames_jug_temp = jugadors_temporada.columns
         
         # Atributs descripció
         atributs_jugador = [value 
@@ -84,39 +79,22 @@ for i in range(len(links_jugadors)):
         jugadors_desc=pd.DataFrame(columns=atributs_jugador)
 
 
+
     # Extracció averages
-    try: 
-        eurolliga = soup_jugador.find('span',id= 'ctl00_ctl00_ctl00_maincontainer_maincontent_contentpane_ctl01_ctl03_ctl00_lblCompetitionName').get_text() == "Euroleague"
-    except: 
-        eurolliga = False
-        
+    eurolliga = soup_jugador.find('span', 
+                              id= 'ctl00_ctl00_ctl00_maincontainer_maincontent_contentpane_ctl01_ctl03_ctl00_lblCompetitionName',
+                             text="Euroleague")
     items=soup_jugador.find('tr', class_='PlayerGridRow AverageFooter')
         
     if eurolliga and items:
-        #averages
         averages=items.get_text().split()[1:]
         a_series = pd.Series(averages, index = jugadors_averages.columns)
-        
-        #temporada
-        stat_temp_tot = soup_jugador.find('div', class_ ='PlayerPhaseStatisticsContainer table-responsive-container')
-        element = stat_temp_tot.find('tr', class_="PlayerGridRow")
-        for element in stat_temp_tot.find_all('tr', class_="PlayerGridRow"):
-            stat_temp = element.get_text().split('\n') #eliminar \n. No es fa split() perque separa nomEquip
-            stat_temp = [i for i in stat_temp if i != ""] #eliminar blanks
-            
-            if not stat_temp[0] in ["Totals", "Averages"]: #nomes guarda les temporada
-                stat_temp_series = pd.Series(stat_temp, index = colnames_jug_temp)
-                
-                #afegir nom jugador dataset temporada
-                nom_jug = pd.Series({"name_Complet":jugadors['name_Complet'][i]}) #Corregit [] al nom
-                stat_temp_series = pd.concat([nom_jug,stat_temp_series])
-                jugadors_temporada=jugadors_temporada.append(stat_temp_series,ignore_index=True)
     else:
         a_series = pd.Series(dtype=pd.StringDtype(), index = jugadors_averages.columns)
     
     jugadors_averages=jugadors_averages.append(a_series,ignore_index=True)
     
-
+    
     soup_desc=soup_jugador.find('div',class_="summary").find_all(text=True)
     
      # Extracció descripcions
@@ -132,13 +110,10 @@ for i in range(len(links_jugadors)):
     jugadors_desc=jugadors_desc.append(a_series,ignore_index=True)
 
 
+
 # Unió datasets    
 jugadors_descAverages=pd.concat([jugadors_desc,jugadors_averages],axis=1) # Unir datasets descripció i averages
 jugadors= pd.concat([jugadors,jugadors_descAverages],axis=1) #Unir datasets noms jugadors amb les seves dades
 
 
-jugadors_temporada.to_csv("jugadors_temporada.csv",index=False)
-#jugadors.to_csv("jugadors.csv",index=False)
-
-end_time = time.time()
-print (str(round(((end_time - start_time) / 60) , 2)))
+jugadors.to_csv("jugadors.csv",index=False)
