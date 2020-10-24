@@ -41,6 +41,7 @@ for letra in abecedari:
         cognom=name_complet.split(", ")[0]
         nom=name_complet.split(", ")[1]
         jugadors=jugadors.append({"name_Complet":name_complet, "cognom":cognom, "nom":nom },ignore_index=True)
+        jugadors=jugadors[["name_Complet","cognom","nom"]] # Corregido el orden de las columnas
 
 i = 0 # primer jugador
 for i in range(len(links_jugadors)):
