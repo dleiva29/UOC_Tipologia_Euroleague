@@ -11,5 +11,43 @@ import string
 from bs4 import BeautifulSoup
 
 class EuroleagueScraper():
-  
-  def __init__(self):
+    
+    def __init__(self):
+        self.abecedari=string.ascii_uppercase #Iterar per tot l'abecedari
+        self.links_jugadors=pd.DataFrame()
+        self.jugadors_averages=pd.DataFrame()
+        self.jugadors=pd.DataFrame()
+        self.atributs =[]
+        self.url_base="https://www.euroleague.net"
+        self.url_web_jugadors_base="https://www.euroleague.net/competition/players?letter="
+        
+    def __download_html(self, url, letra=""):
+        time.sleep(15)
+        url_compuesta=url+letra
+        page = requests.get(url_compuesta)
+        soup = BeautifulSoup(page.content,features="lxml")
+        return soup
+    
+    
+      
+      
+      
+
+      
+      
+      
+
+
+
+
+start_time = time.time()
+
+
+
+
+
+
+
+
+
+
