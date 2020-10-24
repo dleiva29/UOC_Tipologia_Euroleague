@@ -107,7 +107,7 @@ for i in range(len(links_jugadors)):
                 stat_temp_series = pd.Series(stat_temp, index = colnames_jug_temp)
                 
                 #afegir nom jugador dataset temporada
-                nom_jug = pd.Series({"name_Complet":[jugadors['name_Complet'][i]]}) #faltaria treure [] al nom
+                nom_jug = pd.Series({"name_Complet":jugadors['name_Complet'][i]}) #Corregit [] al nom
                 stat_temp_series = pd.concat([nom_jug,stat_temp_series])
                 jugadors_temporada=jugadors_temporada.append(stat_temp_series,ignore_index=True)
     else:
