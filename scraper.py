@@ -47,28 +47,28 @@ class EuroleagueScraper():
             cap  = soup_jugador.find('tr', class_= 'PlayerGridHeader').find_all('th')
             at_prev=""
 
-        for ind in cap:
-            at= ind.get_text()
-            if at=="%":
-                at=at_prev+"_%" #Corregir % sólos
-            atributs.append(at)
-            at_prev=at
-        jugadors_averages=pd.DataFrame(columns=atributs[2:]) 
-        jugadors_temporada = pd.DataFrame(columns=atributs)
-        colnames_jug_temp = jugadors_temporada.columns
-        
-        # Atributs descripció
-        atributs_jugador = [value 
-           for element in soup_jugador.find('div',class_="summary-first").find_all('span',class_=True)
-           for value in element["class"]]
-
-        atributs_jugador.append("position")
-
-        for element in soup_jugador.find('div',class_="summary-second").find_all('span'):
-            at=element.get_text().split(": ")[0]
-            atributs_jugador.append(at)
-
-        jugadors_desc=pd.DataFrame(columns=atributs_jugador)
+            for ind in cap:
+                at= ind.get_text()
+                if at=="%":
+                    at=at_prev+"_%" #Corregir % sólos
+                self.atributs.append(at)
+                at_prev=at
+            self.jugadors_averages=pd.DataFrame(columns=atributs[2:]) 
+            jugadors_temporada = pd.DataFrame(columns=atributs)
+            colnames_jug_temp = jugadors_temporada.columns
+            
+            # Atributs descripció
+            atributs_jugador = [value 
+               for element in soup_jugador.find('div',class_="summary-first").find_all('span',class_=True)
+               for value in element["class"]]
+    
+            atributs_jugador.append("position")
+    
+            for element in soup_jugador.find('div',class_="summary-second").find_all('span'):
+                at=element.get_text().split(": ")[0]
+                atributs_jugador.append(at)
+    
+            jugadors_desc=pd.DataFrame(columns=atributs_jugador)
             
             
 
