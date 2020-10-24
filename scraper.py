@@ -39,14 +39,23 @@ class EuroleagueScraper():
             self.jugadors=self.jugadors.append({"name_Complet":name_complet, 
                                                 "cognom":cognom, 
                                                 "nom":nom },ignore_index=True)
-            self.jugadors=self.jugadors[["name_Complet","cognom","nom"]]      
+            self.jugadors=self.jugadors[["name_Complet","cognom","nom"]]  
+            
+            
+
       
-      
 
+    def scraper(self):
+        start_time = time.time()
+        for letra in self.abecedari:
+            soup=self.__download_html(self.url_web_jugadors_base,letra)
+            self.__get_jugadors(soup)
+            
+    
+    
+    
+    
 
-
-
-start_time = time.time()
 
 
 
