@@ -41,35 +41,36 @@ class EuroleagueScraper():
                                                 "nom":nom },ignore_index=True)
             self.jugadors=self.jugadors[["name_Complet","cognom","nom"]]
             
-        def __get_atributs(self):
-            url_jugador_career="https://www.euroleague.net"+self.links_jugadors.link[0][0]+"#!careerstats"
-            soup_jugador= self.__download_html()
-            cap  = soup_jugador.find('tr', class_= 'PlayerGridHeader').find_all('th')
-            at_prev=""
+    def __get_atributs(self):
+        url_jugador_career=self.url_base+self.links_jugadors.link[0][0]+"#!careerstats"
+        soup_jugador= self.__download_html(url_jugador_career)
+        headers  = soup_jugador.find('tr', class_= 'PlayerGridHeader').find_all('th')
+        
+        atribut_prev=""
+        for head in headers:
+            atribut= head.get_text()
+            if atribut=="%":
+                atribut=atribut_prev+"_%" #Corregir % sólos
+            self.atributs.append(atribut)
+            atribut_prev=atribut
+        
+        self.jugadors_averages=pd.DataFrame(columns=self.atributs[2:]) 
+        self.jugadors_temporada = pd.DataFrame(columns=self.atributs)
+        self.colnames_jug_temp = self.jugadors_temporada.columns
+        
+        # Atributs descripció
+        atributs_jugador = [value 
+           for element in soup_jugador.find('div',class_="summary-first").find_all('span',class_=True)
+           for value in element["class"]]
 
-            for ind in cap:
-                at= ind.get_text()
-                if at=="%":
-                    at=at_prev+"_%" #Corregir % sólos
-                self.atributs.append(at)
-                at_prev=at
-            self.jugadors_averages=pd.DataFrame(columns=atributs[2:]) 
-            jugadors_temporada = pd.DataFrame(columns=atributs)
-            colnames_jug_temp = jugadors_temporada.columns
-            
-            # Atributs descripció
-            atributs_jugador = [value 
-               for element in soup_jugador.find('div',class_="summary-first").find_all('span',class_=True)
-               for value in element["class"]]
-    
-            atributs_jugador.append("position")
-    
-            for element in soup_jugador.find('div',class_="summary-second").find_all('span'):
-                at=element.get_text().split(": ")[0]
-                atributs_jugador.append(at)
-    
-            jugadors_desc=pd.DataFrame(columns=atributs_jugador)
-            
+        atributs_jugador.append("position")
+
+        for element in soup_jugador.find('div',class_="summary-second").find_all('span'):
+            atribut=element.get_text().split(": ")[0]
+            atributs_jugador.append(atribut)
+
+        self.jugadors_desc=pd.DataFrame(columns=atributs_jugador)
+        
             
 
       
@@ -79,6 +80,12 @@ class EuroleagueScraper():
         for letra in self.abecedari:
             soup=self.__download_html(self.url_web_jugadors_base,letra)
             self.__get_jugadors(soup)
+            
+            if not self.atributs:
+                # si atributs buit            
+                self.__get_atributs()
+            
+            
             
     
     
