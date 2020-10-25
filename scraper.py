@@ -13,7 +13,8 @@ from bs4 import BeautifulSoup
 class EuroleagueScraper():
     
     def __init__(self):
-        self.abecedari=string.ascii_uppercase #Iterar per tot l'abecedari
+        #self.abecedari=string.ascii_uppercase #Iterar per tot l'abecedari
+        self.abecedari= 'B'
         self.links_jugadors=pd.DataFrame()
         self.jugadors_averages=pd.DataFrame()
         self.jugadors=pd.DataFrame()
@@ -78,35 +79,67 @@ class EuroleagueScraper():
         except: 
             eurolliga = False
         
-        items=soup_jugador.find('tr', class_='PlayerGridRow AverageFooter')
+        self.items=soup_jugador.find('tr', class_='PlayerGridRow AverageFooter')
         
-        if eurolliga and items:
+        if eurolliga and self.items:
             return True
         else:
             return False
         
-                
+    def __data(self,soup_jugador, index):
+        
+        if self.__has_date(soup_jugador):
             
-
-      
-
+            #averages
+            averages=self.items.get_text().split()[1:]
+            a_series = pd.Series(averages, index = self.jugadors_averages.columns)
+        
+            #temporada
+            stat_temp_tot = soup_jugador.find('div', class_ ='PlayerPhaseStatisticsContainer table-responsive-container')
+            element = stat_temp_tot.find('tr', class_="PlayerGridRow")
+            for element in stat_temp_tot.find_all('tr', class_="PlayerGridRow"):
+                stat_temp = element.get_text().split('\n') #eliminar \n. No es fa split() perque separa nomEquip
+                stat_temp = [i for i in stat_temp if i != ""] #eliminar blanks
+                
+                if not stat_temp[0] in ["Totals", "Averages"]: #nomes guarda les temporada
+                    stat_temp_series = pd.Series(stat_temp, index = self.colnames_jug_temp)
+                    
+                    #afegir nom jugador dataset temporada
+                    nom_jug = pd.Series({"name_Complet":self.jugadors['name_Complet'][index]}) #Corregit [] al nom
+                    stat_temp_series = pd.concat([nom_jug,stat_temp_series])
+                    self.jugadors_temporada=self.jugadors_temporada.append(stat_temp_series,ignore_index=True)
+        else:
+            a_series = pd.Series(dtype=pd.StringDtype(), index = self.jugadors_averages.columns)
+    
+        self.jugadors_averages=self.jugadors_averages.append(a_series,ignore_index=True)
+        
+                
     def scraper(self):
         start_time = time.time()
         for letra in self.abecedari:
             soup=self.__download_html(self.url_web_jugadors_base,letra)
             self.__load_jugadors(soup)
-            print(letra)
+            print('Lletra: ',letra)
                       
             
         if not self.atributs:
             # si atributs buit            
             self.__create_atributs()
                 
-        for i in range(len(self.links_jugadors)):
-            print("rrrr")
+        #for i in range(len(self.links_jugadors)):
+        for i in range(3)   :
             url_jugador_career="https://www.euroleague.net"+self.links_jugadors.link[i][0]+"#!careerstats"
-            soup=self.__download_html(url_jugador_career)            
-            print(self.__has_date(soup))
+            soup=self.__download_html(url_jugador_career)     
+            jug = self.__load_jugadors(soup)
+            print('seguent jugador: ', i, self.__has_date(soup))
+            self.__data(soup,i)
+            
+        print('Temporada a temporada:')
+        print(self.jugadors_temporada)
+        print('Averages:')
+        print(self.jugadors_averages)
+            
+            
             
             
             
