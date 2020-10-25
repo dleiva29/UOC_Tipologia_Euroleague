@@ -28,7 +28,7 @@ class EuroleagueScraper():
         soup = BeautifulSoup(page.content,features="lxml")
         return soup
     
-    def __get_jugadors(self,soup):
+    def __load_jugadors(self,soup):
         items=soup.find_all('div', class_='item')
         for link in items:
             l=[link.a.get('href')]
@@ -41,7 +41,7 @@ class EuroleagueScraper():
                                                 "nom":nom },ignore_index=True)
             self.jugadors=self.jugadors[["name_Complet","cognom","nom"]]
             
-    def __get_atributs(self):
+    def __create_atributs(self):
         url_jugador_career=self.url_base+self.links_jugadors.link[0][0]+"#!careerstats"
         soup_jugador= self.__download_html(url_jugador_career)
         headers  = soup_jugador.find('tr', class_= 'PlayerGridHeader').find_all('th')
@@ -71,6 +71,21 @@ class EuroleagueScraper():
 
         self.jugadors_desc=pd.DataFrame(columns=atributs_jugador)
         
+        
+    def __has_date(self,soup_jugador):
+        try: 
+            eurolliga = soup_jugador.find('span',id= 'ctl00_ctl00_ctl00_maincontainer_maincontent_contentpane_ctl01_ctl03_ctl00_lblCompetitionName').get_text() == "Euroleague"
+        except: 
+            eurolliga = False
+        
+        items=soup_jugador.find('tr', class_='PlayerGridRow AverageFooter')
+        
+        if eurolliga and items:
+            return True
+        else:
+            return False
+        
+                
             
 
       
@@ -79,11 +94,19 @@ class EuroleagueScraper():
         start_time = time.time()
         for letra in self.abecedari:
             soup=self.__download_html(self.url_web_jugadors_base,letra)
-            self.__get_jugadors(soup)
+            self.__load_jugadors(soup)
+            print(letra)
+                      
             
-            if not self.atributs:
-                # si atributs buit            
-                self.__get_atributs()
+        if not self.atributs:
+            # si atributs buit            
+            self.__create_atributs()
+                
+        for i in range(len(self.links_jugadors)):
+            print("rrrr")
+            url_jugador_career="https://www.euroleague.net"+self.links_jugadors.link[i][0]+"#!careerstats"
+            soup=self.__download_html(url_jugador_career)            
+            print(self.__has_date(soup))
             
             
             
