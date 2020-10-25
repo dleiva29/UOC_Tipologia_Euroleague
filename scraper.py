@@ -79,9 +79,9 @@ class EuroleagueScraper():
         except: 
             eurolliga = False
         
-        self.items=soup_jugador.find('tr', class_='PlayerGridRow AverageFooter')
+        items=soup_jugador.find('tr', class_='PlayerGridRow AverageFooter')
         
-        if eurolliga and self.items:
+        if eurolliga and items:
             return True
         else:
             return False
@@ -91,7 +91,9 @@ class EuroleagueScraper():
         if self.__has_date(soup_jugador):
             
             #averages
-            averages=self.items.get_text().split()[1:]
+            averages=soup_jugador.find('tr', class_='PlayerGridRow AverageFooter').get_text().split()[1:]
+            print(averages)
+            print(self.data_average.columns)
             a_series = pd.Series(averages, index = self.data_average.columns)
         
             #temporada
@@ -111,7 +113,7 @@ class EuroleagueScraper():
         else:
             a_series = pd.Series(dtype=pd.StringDtype(), index = self.data_average.columns)
     
-        self.data_average=self.data_average.append(a_series,ignore_index=True)
+        self.data_average = self.data_average.append(a_series,ignore_index=True)
         
         #Descriptors
         soup_desc=soup_jugador.find('div',class_="summary").find_all(text=True)
@@ -127,8 +129,8 @@ class EuroleagueScraper():
     
 
         # Unió datasets    
-        self.data_average=pd.concat([self.jugadors_desc,self.data_average],axis=1) # Unir datasets descripció i averages
-        self.data_average= pd.concat([self.jugadors,self.data_average],axis=1) #Unir datasets noms jugadors amb les seves dades
+        dataJug_average_desc=pd.concat([self.jugadors_desc,self.data_average],axis=1) # Unir datasets descripció i averages
+        self.jugadors= pd.concat([self.jugadors,dataJug_average_desc],axis=1) #Unir datasets noms jugadors amb les seves dades
         
                 
     def scraper(self):
@@ -138,23 +140,23 @@ class EuroleagueScraper():
             self.__load_jugadors(soup)
             print('Lletra: ',letra)
                       
-            
         if not self.atributs:
             # si atributs buit            
             self.__create_atributs()
                 
         #for i in range(len(self.links_jugadors)):
-        for i in [2]   :
+        for i in range(4)   :
             url_jugador_career="https://www.euroleague.net"+self.links_jugadors.link[i][0]+"#!careerstats"
             soup=self.__download_html(url_jugador_career)     
             jug = self.__load_jugadors(soup)
             print('seguent jugador: ', i, self.__has_date(soup))
             self.__data(soup,i)
+            print('Atributs: ' , self.atributs)
             
         print('Temporada a temporada:')
         print(self.data_temporada)
         print('Averages:')
-        print(self.data_average)
+        print(self.jugadors)
             
             
             
