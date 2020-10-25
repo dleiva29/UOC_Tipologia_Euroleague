@@ -117,6 +117,7 @@ for i in range(len(links_jugadors)):
     jugadors_averages=jugadors_averages.append(a_series,ignore_index=True)
     
 
+
     soup_desc=soup_jugador.find('div',class_="summary").find_all(text=True)
     
      # Extracció descripcions

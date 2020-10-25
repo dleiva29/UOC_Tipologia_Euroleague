@@ -14,7 +14,7 @@ class EuroleagueScraper():
     
     def __init__(self):
         #self.abecedari=string.ascii_uppercase #Iterar per tot l'abecedari
-        self.abecedari= 'B'
+        self.abecedari= 'A'
         self.links_jugadors=pd.DataFrame()
         #self.data_average=pd.DataFrame()
         self.jugadors=pd.DataFrame()
@@ -92,8 +92,6 @@ class EuroleagueScraper():
             
             #averages
             averages=soup_jugador.find('tr', class_='PlayerGridRow AverageFooter').get_text().split()[1:]
-            print(averages)
-            print(self.data_average.columns)
             a_series = pd.Series(averages, index = self.data_average.columns)
         
             #temporada
@@ -138,25 +136,43 @@ class EuroleagueScraper():
         for letra in self.abecedari:
             soup=self.__download_html(self.url_web_jugadors_base,letra)
             self.__load_jugadors(soup)
-            print('Lletra: ',letra)
                       
         if not self.atributs:
             # si atributs buit            
             self.__create_atributs()
                 
         #for i in range(len(self.links_jugadors)):
-        for i in range(4)   :
+        for i in range(1):
             url_jugador_career="https://www.euroleague.net"+self.links_jugadors.link[i][0]+"#!careerstats"
             soup=self.__download_html(url_jugador_career)     
             jug = self.__load_jugadors(soup)
-            print('seguent jugador: ', i, self.__has_date(soup))
             self.__data(soup,i)
-            print('Atributs: ' , self.atributs)
             
         print('Temporada a temporada:')
         print(self.data_temporada)
         print('Averages:')
         print(self.jugadors)
+        
+        
+    def data2csv(self):
+        self.data_temporada.to_csv("csv/data_temporada.csv",index=False)
+        self.jugadors.to_csv("csv/data_averages.csv",index=False)
+        
+        #        #Temporada a temporada
+        # file = open("csv/data_temporada.csv", "w+")
+
+        # for i in range(len(self.data_temporada)):
+        #     for j in range(len(self.data_temporada[i])):
+        #         file.write(self.data_temporada[i][j] + ";")
+        #     file.write("\n");
+            
+        # #Temporada a temporada
+        # file2 = open("csv/data_averages.csv", "w+")
+
+        # for i in range(len(self.jugadors)):
+        #     for j in range(len(self.jugadors[i])):
+        #         file2.write(self.jugadors[i][j] + ";")
+        #     file2.write("\n");
             
             
             
