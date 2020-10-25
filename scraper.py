@@ -16,7 +16,7 @@ class EuroleagueScraper():
         #self.abecedari=string.ascii_uppercase #Iterar per tot l'abecedari
         self.abecedari= 'B'
         self.links_jugadors=pd.DataFrame()
-        self.jugadors_averages=pd.DataFrame()
+        #self.data_average=pd.DataFrame()
         self.jugadors=pd.DataFrame()
         self.atributs =[]
         self.url_base="https://www.euroleague.net"
@@ -55,9 +55,9 @@ class EuroleagueScraper():
             self.atributs.append(atribut)
             atribut_prev=atribut
         
-        self.jugadors_averages=pd.DataFrame(columns=self.atributs[2:]) 
-        self.jugadors_temporada = pd.DataFrame(columns=self.atributs)
-        self.colnames_jug_temp = self.jugadors_temporada.columns
+        self.data_average=pd.DataFrame(columns=self.atributs[2:]) 
+        self.data_temporada = pd.DataFrame(columns=self.atributs)
+        self.colnames_jug_temp = self.data_temporada.columns
         
         # Atributs descripció
         atributs_jugador = [value 
@@ -92,7 +92,7 @@ class EuroleagueScraper():
             
             #averages
             averages=self.items.get_text().split()[1:]
-            a_series = pd.Series(averages, index = self.jugadors_averages.columns)
+            a_series = pd.Series(averages, index = self.data_average.columns)
         
             #temporada
             stat_temp_tot = soup_jugador.find('div', class_ ='PlayerPhaseStatisticsContainer table-responsive-container')
@@ -107,11 +107,28 @@ class EuroleagueScraper():
                     #afegir nom jugador dataset temporada
                     nom_jug = pd.Series({"name_Complet":self.jugadors['name_Complet'][index]}) #Corregit [] al nom
                     stat_temp_series = pd.concat([nom_jug,stat_temp_series])
-                    self.jugadors_temporada=self.jugadors_temporada.append(stat_temp_series,ignore_index=True)
+                    self.data_temporada=self.data_temporada.append(stat_temp_series,ignore_index=True)
         else:
-            a_series = pd.Series(dtype=pd.StringDtype(), index = self.jugadors_averages.columns)
+            a_series = pd.Series(dtype=pd.StringDtype(), index = self.data_average.columns)
     
-        self.jugadors_averages=self.jugadors_averages.append(a_series,ignore_index=True)
+        self.data_average=self.data_average.append(a_series,ignore_index=True)
+        
+        #Descriptors
+        soup_desc=soup_jugador.find('div',class_="summary").find_all(text=True)
+      
+        descriptor = [soup_desc[ind] for ind in [2, 5, 7]]
+
+        for element in soup_jugador.find('div',class_="summary-second").find_all('span'):
+            at=element.get_text().split(": ")[1]
+            descriptor.append(at)
+
+        a_series = pd.Series(descriptor, index = self.jugadors_desc.columns)
+        self.jugadors_desc=self.jugadors_desc.append(a_series,ignore_index=True)
+    
+
+        # Unió datasets    
+        self.data_average=pd.concat([self.jugadors_desc,self.data_average],axis=1) # Unir datasets descripció i averages
+        self.data_average= pd.concat([self.jugadors,self.data_average],axis=1) #Unir datasets noms jugadors amb les seves dades
         
                 
     def scraper(self):
@@ -127,7 +144,7 @@ class EuroleagueScraper():
             self.__create_atributs()
                 
         #for i in range(len(self.links_jugadors)):
-        for i in range(3)   :
+        for i in [2]   :
             url_jugador_career="https://www.euroleague.net"+self.links_jugadors.link[i][0]+"#!careerstats"
             soup=self.__download_html(url_jugador_career)     
             jug = self.__load_jugadors(soup)
@@ -135,9 +152,9 @@ class EuroleagueScraper():
             self.__data(soup,i)
             
         print('Temporada a temporada:')
-        print(self.jugadors_temporada)
+        print(self.data_temporada)
         print('Averages:')
-        print(self.jugadors_averages)
+        print(self.data_average)
             
             
             
