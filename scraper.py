@@ -145,7 +145,7 @@ class EuroleagueScraper():
         print("Extraccio de dades dels jugadors")
         for i in range(len(self.links_jugadors)):
         #for i in range(1):
-            print("jugador: "+ i + " de "+ len(self.links_jugadors))
+            print((i/len(self.links_jugadors))*100)
             
             url_jugador_career="https://www.euroleague.net"+self.links_jugadors.link[i][0]+"#!careerstats"
             soup=self.__download_html(url_jugador_career)     
