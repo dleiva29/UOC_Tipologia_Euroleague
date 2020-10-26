@@ -37,10 +37,10 @@ class EuroleagueScraper():
             self.links_jugadors=self.links_jugadors.append({"link":l},ignore_index=True)
             cognom=name_complet.split(", ")[0]
             nom=name_complet.split(", ")[1]
-            self.jugadors=self.jugadors.append({"name_Complet":name_complet, 
-                                                "cognom":cognom, 
-                                                "nom":nom },ignore_index=True)
-            self.jugadors=self.jugadors[["name_Complet","cognom","nom"]]
+            self.jugadors=self.jugadors.append({"Name_Complet":name_complet, 
+                                                "Cognom":cognom, 
+                                                "Nom":nom },ignore_index=True)
+            self.jugadors=self.jugadors[["Name_Complet","Cognom","Nom"]]
             
     def __create_atributs(self):
         url_jugador_career=self.url_base+self.links_jugadors.link[0][0]+"#!careerstats"
@@ -60,11 +60,11 @@ class EuroleagueScraper():
         self.colnames_jug_temp = self.data_temporada.columns
         
         # Atributs descripció
-        atributs_jugador = [value 
+        atributs_jugador = [value.capitalize() 
            for element in soup_jugador.find('div',class_="summary-first").find_all('span',class_=True)
            for value in element["class"]]
 
-        atributs_jugador.append("position")
+        atributs_jugador.append("Position")
 
         for element in soup_jugador.find('div',class_="summary-second").find_all('span'):
             atribut=element.get_text().split(": ")[0]
@@ -105,7 +105,7 @@ class EuroleagueScraper():
                     stat_temp_series = pd.Series(stat_temp, index = self.colnames_jug_temp)
                     
                     #afegir nom jugador dataset temporada
-                    nom_jug = pd.Series({"name_Complet":self.jugadors['name_Complet'][index]}) #Corregit [] al nom
+                    nom_jug = pd.Series({"Name_Complet":self.jugadors['Name_Complet'][index]}) #Corregit [] al nom
                     stat_temp_series = pd.concat([nom_jug,stat_temp_series])
                     self.data_temporada=self.data_temporada.append(stat_temp_series,ignore_index=True)
         else:
@@ -130,22 +130,28 @@ class EuroleagueScraper():
                 
     def scraper(self):
         start_time = time.time()
+        print("Extracció del noms i links dels jugadors")
         for letra in self.abecedari:
             soup=self.__download_html(self.url_web_jugadors_base,letra)
             self.__load_jugadors(soup)
             print('Lletra abecedari:',letra)
-            print(self.jugadors)
+            
                       
         if not self.atributs:
             # si atributs buit            
             self.__create_atributs()
+            print('Create atributs')
                 
+        print("Extraccio de dades dels jugadors)
         for i in range(len(self.links_jugadors)):
         #for i in range(1):
+            print("jugador: "+ i + " de "+ len(self.links_jugadors))
+            
             url_jugador_career="https://www.euroleague.net"+self.links_jugadors.link[i][0]+"#!careerstats"
             soup=self.__download_html(url_jugador_career)     
-            jug = self.__load_jugadors(soup)
+            #jug = self.__load_jugadors(soup)
             self.__data(soup,i)
+            
             
             # Unió 
             
@@ -154,7 +160,10 @@ class EuroleagueScraper():
         print("data_avarages_desc:", dataJug_average_desc)
         self.data_averages= pd.concat([self.jugadors,dataJug_average_desc],axis=1) #Unir datasets noms jugadors amb les seves dades
         
-            
+        end_time = time.time()
+		print "\nelapsed time: " + \
+			str(round(((end_time - start_time) / 60) , 2)) + " minutes"   
+        
         # print('Temporada a temporada:')
         # print(self.data_temporada)
         print('Averages:')
@@ -180,6 +189,7 @@ class EuroleagueScraper():
         #     for j in range(len(self.jugadors[i])):
         #         file2.write(self.jugadors[i][j] + ";")
         #     file2.write("\n");
+
             
             
             
