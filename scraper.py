@@ -142,7 +142,7 @@ class EuroleagueScraper():
             self.__create_atributs()
             print('Create atributs')
                 
-        print("Extraccio de dades dels jugadors)
+        print("Extraccio de dades dels jugadors")
         for i in range(len(self.links_jugadors)):
         #for i in range(1):
             print("jugador: "+ i + " de "+ len(self.links_jugadors))
@@ -161,8 +161,8 @@ class EuroleagueScraper():
         self.data_averages= pd.concat([self.jugadors,dataJug_average_desc],axis=1) #Unir datasets noms jugadors amb les seves dades
         
         end_time = time.time()
-		print "\nelapsed time: " + \
-			str(round(((end_time - start_time) / 60) , 2)) + " minutes"   
+        print ("\nelapsed time: " + 
+               str(round(((end_time - start_time) / 60) , 2)) + " minutes" )  
         
         # print('Temporada a temporada:')
         # print(self.data_temporada)
