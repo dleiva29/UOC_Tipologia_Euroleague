@@ -1,10 +1,10 @@
 name_Complet,cognom,nom,club,dorsal,position,Height,Born,Nationality,G,Pts,Avg,2FG,2FG_%,3FG,3FG_%,FT,FT_%,Reb,St,As,Bl
 "ABALDE, ALBERTO",ABALDE,ALBERTO,Real Madrid,6,Forward,2.02,"15 December, 1995",Spain,53,414,7.8,99/199,49.7,52/121,43,60/78,76.9,3,0.4,1.7,0
-"ABRINES, ALEX",ABRINES,ALEX,,,,,,,,,,,,,,,,,,,
-"ALBER, EIDAN",ALBER,EIDAN,,,,,,,,,,,,,,,,,,,
-"ALOCEN, CARLOS",ALOCEN,CARLOS,,,,,,,,,,,,,,,,,,,
-"AMAIZE, ROBIN",AMAIZE,ROBIN,,,,,,,,,,,,,,,,,,,
-"ANDERSON, JAMES",ANDERSON,JAMES,,,,,,,,,,,,,,,,,,,
-"ANTONOV, SEMEN",ANTONOV,SEMEN,,,,,,,,,,,,,,,,,,,
-"ATIAS, YONATAN",ATIAS,YONATAN,,,,,,,,,,,,,,,,,,,
-"AUGUSTE, ZACH",AUGUSTE,ZACH,,,,,,,,,,,,,,,,,,,
+"ABRINES, ALEX",ABRINES,ALEX,FC Barcelona,21,Forward,1.98,"1 August, 1993",Spain,127,858,6.8,140/245,57.1,153/402,38.1,119/145,82.1,1.7,0.5,0.7,0.1
+"ALBER, EIDAN",ALBER,EIDAN,Maccabi Playtika Tel Aviv,24,Guard,1.94,"25 January, 2000",Israel,,,,,,,,,,,,,
+"ALOCEN, CARLOS",ALOCEN,CARLOS,Real Madrid,12,Guard,1.94,"30 December, 2000",Spain,4,7,1.8,2/6,33.3,1/5,20,0/0,0,0.5,0.3,1,0
+"AMAIZE, ROBIN",AMAIZE,ROBIN,FC Bayern Munich,15,Forward,1.88,"31 January, 1994",Germany,17,12,0.7,1/4,25,3/8,37.5,1/2,50,0.2,0.1,0.2,0
+"ANDERSON, JAMES",ANDERSON,JAMES,Anadolu Efes Istanbul,23,Forward,1.98,"25 March, 1989",United States of America,158,1240,7.8,261/540,48.3,186/528,35.2,160/205,78,3.2,0.5,1.1,0.3
+"ANTONOV, SEMEN",ANTONOV,SEMEN,CSKA Moscow,11,Forward,2.02,"18 July, 1989",Russian Federation,129,444,3.4,93/197,47.2,70/190,36.8,48/67,71.6,1.8,0.3,0.6,0.4
+"ATIAS, YONATAN",ATIAS,YONATAN,Maccabi Playtika Tel Aviv,25,Center,2.05,"26 January, 2001",Israel,,,,,,,,,,,,,
+"AUGUSTE, ZACH",AUGUSTE,ZACH,Panathinaikos OPAP Athens,8,Center,2.08,"8 July, 1993",Greece,18,43,2.4,20/29,69,0/0,0,3/12,25,1.6,0.4,0.2,0.2

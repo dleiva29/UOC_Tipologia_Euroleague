@@ -13,8 +13,8 @@ from bs4 import BeautifulSoup
 class EuroleagueScraper():
     
     def __init__(self):
-        #self.abecedari=string.ascii_uppercase #Iterar per tot l'abecedari
-        self.abecedari= 'A'
+        self.abecedari=string.ascii_uppercase #Iterar per tot l'abecedari
+        #self.abecedari= 'A'
         self.links_jugadors=pd.DataFrame()
         #self.data_average=pd.DataFrame()
         self.jugadors=pd.DataFrame()
@@ -70,7 +70,7 @@ class EuroleagueScraper():
             atribut=element.get_text().split(": ")[0]
             atributs_jugador.append(atribut)
 
-        self.jugadors_desc=pd.DataFrame(columns=atributs_jugador)
+        self.data_desc=pd.DataFrame(columns=atributs_jugador)
         
         
     def __has_date(self,soup_jugador):
@@ -122,41 +122,48 @@ class EuroleagueScraper():
             at=element.get_text().split(": ")[1]
             descriptor.append(at)
 
-        a_series = pd.Series(descriptor, index = self.jugadors_desc.columns)
-        self.jugadors_desc=self.jugadors_desc.append(a_series,ignore_index=True)
+        a_series = pd.Series(descriptor, index = self.data_desc.columns)
+        self.data_desc=self.data_desc.append(a_series,ignore_index=True)
     
 
-        # Unió datasets    
-        dataJug_average_desc=pd.concat([self.jugadors_desc,self.data_average],axis=1) # Unir datasets descripció i averages
-        self.jugadors= pd.concat([self.jugadors,dataJug_average_desc],axis=1) #Unir datasets noms jugadors amb les seves dades
-        
+    
                 
     def scraper(self):
         start_time = time.time()
         for letra in self.abecedari:
             soup=self.__download_html(self.url_web_jugadors_base,letra)
             self.__load_jugadors(soup)
+            print('Lletra abecedari:',letra)
+            print(self.jugadors)
                       
         if not self.atributs:
             # si atributs buit            
             self.__create_atributs()
                 
-        #for i in range(len(self.links_jugadors)):
-        for i in range(1):
+        for i in range(len(self.links_jugadors)):
+        #for i in range(1):
             url_jugador_career="https://www.euroleague.net"+self.links_jugadors.link[i][0]+"#!careerstats"
             soup=self.__download_html(url_jugador_career)     
             jug = self.__load_jugadors(soup)
             self.__data(soup,i)
             
-        print('Temporada a temporada:')
-        print(self.data_temporada)
+            # Unió 
+            
+        print("data_average:", self.data_average)
+        dataJug_average_desc=pd.concat([self.data_desc,self.data_average],axis=1) # Unir datasets descripció i averages
+        print("data_avarages_desc:", dataJug_average_desc)
+        self.data_averages= pd.concat([self.jugadors,dataJug_average_desc],axis=1) #Unir datasets noms jugadors amb les seves dades
+        
+            
+        # print('Temporada a temporada:')
+        # print(self.data_temporada)
         print('Averages:')
-        print(self.jugadors)
+        print(self.data_averages)
         
         
     def data2csv(self):
         self.data_temporada.to_csv("csv/data_temporada.csv",index=False)
-        self.jugadors.to_csv("csv/data_averages.csv",index=False)
+        self.data_averages.to_csv("csv/data_averages.csv",index=False)
         
         #        #Temporada a temporada
         # file = open("csv/data_temporada.csv", "w+")
