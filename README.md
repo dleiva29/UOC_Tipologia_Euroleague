@@ -24,7 +24,7 @@ S'han fet servir técniques de _web scraping_ en llenguatge Python amb la llibre
 ## Description
 
 Extraction of the stats of players participating in the 2020-2021 season of the [Eurolliga](https://www.euroleague.net/). 
-_Web scraping_ techniques have been used in Python lenaguage with _BeautifulSoup_ library.
+_Web scraping_ techniques have been used in Python lenguage with _BeautifulSoup_ library.
 
 ### Fitxers
 
